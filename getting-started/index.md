@@ -1,70 +1,88 @@
 ---
 title: "What VS-HCI is"
-description: "Hyperconverged infrastructure for your own hardware — compute, network and storage on the same servers, managed from one console."
+description: "Compute, storage and networking converged onto the same servers, run from one control plane."
 status: published
 ---
 
-VS-HCI turns a set of standard x86 servers into a single pool of compute, network
-and storage, managed from one web console.
+VS-HCI is a hyperconverged infrastructure platform. You install it on bare metal, and each
+server contributes CPU and memory for virtual machines, disks for shared storage, and network
+interfaces for the virtual networks those machines sit on. There is no separate SAN, no
+separate management server, and no hypervisor licence to track per socket.
 
-There is nothing to assemble: each server boots the VS-HCI installation medium,
-answers a short wizard, and joins the cluster. Compute, networking and storage are
-part of the same product — no separate SAN, no separate SDN controller, no per-host
-configuration to maintain.
+One control plane — the **console** — runs on the servers themselves and manages all of them.
 
-## What you can run
+## What runs on a server
 
-| | |
+Every server in a VS-HCI cluster runs the same operating system image, **VSOS-HCI**, a hardened
+Debian-based system that you do not administer directly. On top of it:
+
+| Component | What it does |
 |---|---|
-| **Virtual machines** | Create, clone from templates, start/stop/pause, reboot, live-migrate between servers, and resize CPU and memory while running. Browser-based VNC console and SSH terminal. |
-| **Containers** | Docker containers managed alongside VMs — lifecycle, images, logs, inspection. |
-| **Kubernetes** | Create k3s clusters on your servers, add worker nodes, apply manifests from the console. |
-| **Snapshots** | Disk-only or memory+disk snapshots, taken on demand or on a schedule you define. |
-| **Backups** | VM backup and restore to local disk, NFS, iSCSI or a remote SSH target. |
+| Hypervisor | KVM/QEMU, running your virtual machines |
+| Host agent | Executes instructions from the control plane on this server |
+| Virtual switch | Open vSwitch with OVN, providing the virtual networks |
+| Storage | Ceph, pooling the disks across servers into replicated storage |
+| Control plane | The console, API and scheduler — on controller nodes only |
 
-## Networking
+A server that runs both workloads and the control plane is **hyperconverged**. That is the
+normal shape, and the one the installer produces by default.
 
-Software-defined, spanning the whole cluster rather than configured server by server.
+## Two deployment modes
 
-- **Fabrics** — isolated virtual networks (VRFs), each with its own logical switches,
-  routers and address space.
-- **Distributed switching** — one switch definition applied across every server, with
-  VLAN-tagged port groups.
-- **Routing and security** — logical routers, NAT, load balancers, and access control
-  policies applied per network or per port group.
-- **Physical uplinks** — link aggregation (bonds), VLAN trunks, static and policy routes.
+The same installation medium produces either mode; you choose during first-boot setup.
 
-A network change that would cut a server off is rolled back automatically if it is not
-confirmed, so a mistake cannot lock you out of a host.
+**VS-HCI** is the clustered product. Three or more servers, a control plane that survives
+losing one of them, shared storage replicated across nodes, and live migration between hosts.
 
-## Storage
+**VS-Hypervisor** is a single server. Same console, same virtual machines, same networking —
+but with one node there is nothing to fail over to, so controller high availability, live
+migration and replicated storage do not apply.
 
-- **Local pools** — directory and LVM pools on each server's own disks.
-- **Replicated storage** — a storage fabric built on DRBD and LINSTOR keeps volumes
-  mirrored across servers, so a VM survives the loss of the machine its disk lived on.
-- **Exports** — publish capacity as iSCSI, NFS or SMB for systems outside the cluster.
-- **Volumes** — provision, clone, snapshot and resize; attach to any VM.
+> **Note** — This library documents VS-HCI. Where a single-node deployment behaves
+> differently, the page says so.
 
-## Security
+## How you drive it
 
-- **Roles** — five of them: viewer, operator, administrator, super-administrator, and a
-  dedicated role for API clients.
-- **Two-factor authentication** — TOTP, using any standard authenticator app.
-- **API keys** — for scripts and integrations, separate from user accounts.
-- **Audit trail** — every create, update, delete and sign-in is recorded with the account,
-  IP address and client.
-- **Certificates** — each cluster generates its own certificate at first boot; replace it
-  with one from your own authority through the console.
+There are three ways in, and they talk to the same API.
 
-## Staying available
+- **The console** — the web interface, served over HTTPS on port 443 at the cluster's virtual
+  IP or DNS name. This is where nearly everything happens.
+- **The CLI** — SSH to any node lands you in the VS-HCI shell rather than a Linux prompt. It
+  is the tool for checking state when the console is unreachable, and for getting to the
+  operating system underneath when you genuinely need to. See [The VS-HCI shell](/cli/).
+- **The REST API** — everything the console does, it does through this. See
+  [REST API](/reference/api/).
 
-Run three controllers and management survives losing one. They elect an active
-controller which owns the cluster's virtual IP; the others stand by with a continuously
-replicated copy of the cluster's state. If the active controller fails, a standby takes
-the IP and carries on — the console address does not change.
+## What a cluster looks like
 
-## Where to go next
+A minimal production cluster is three servers. That number is not arbitrary: the control plane
+elects an active node, and electing anything requires a majority, which needs an odd number
+greater than one.
 
-- [Requirements]({{ '/getting-started/requirements/' | relative_url }}) — what each server needs.
-- [Installing the first server]({{ '/getting-started/first-server/' | relative_url }}) — founding a cluster.
-- [A tour of the console]({{ '/console/' | relative_url }}) — what each screen does.
+```
+                    ┌─────────────────────────┐
+                    │   Virtual IP (console)  │
+                    └───────────┬─────────────┘
+                                │
+        ┌───────────────────────┼───────────────────────┐
+        │                       │                       │
+   ┌────▼─────┐           ┌─────▼────┐            ┌─────▼────┐
+   │  node1   │           │  node2   │            │  node3   │
+   │ ACTIVE   │           │ STANDBY  │            │ STANDBY  │
+   │          │           │          │            │          │
+   │ VMs      │           │ VMs      │            │ VMs      │
+   │ storage  │◄─────────►│ storage  │◄──────────►│ storage  │
+   └──────────┘           └──────────┘            └──────────┘
+```
+
+One node holds the virtual IP and serves the console; the others stand by with a synchronised
+copy of the database. All three run virtual machines. If the active node fails, a standby takes
+the virtual IP and the console comes back at the same address.
+
+## Where to start
+
+1. [Requirements](/getting-started/requirements/) — what each server needs.
+2. [Creating install media](/getting-started/install-media/) — writing the image.
+3. [Installing the first server](/getting-started/first-server/) — first-boot setup.
+4. [Adding servers](/getting-started/adding-servers/) — growing to a cluster.
+5. [First sign-in](/getting-started/first-sign-in/) — what to do once the console is up.

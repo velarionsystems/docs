@@ -33,6 +33,8 @@
       url: /console/approvals/
     - title: Tasks
       url: /console/tasks/
+    - title: Settings
+      url: /console/settings/
 
 - section: Virtual machines
   icon: server
@@ -41,7 +43,7 @@
       url: /vms/
     - title: Creating a VM
       url: /vms/creating/
-    - title: Templates
+    - title: Templates and images
       url: /vms/templates/
     - title: Console and terminal
       url: /vms/console-access/
@@ -51,6 +53,8 @@
       url: /vms/snapshots/
     - title: Resizing CPU and memory
       url: /vms/resizing/
+    - title: Virtual USB
+      url: /vms/virtual-usb/
 
 - section: Containers and Kubernetes
   icon: box
@@ -65,16 +69,18 @@
   items:
     - title: Overview
       url: /networking/
-    - title: Fabrics
-      url: /networking/fabrics/
-    - title: Distributed switches
-      url: /networking/distributed-switches/
-    - title: Routing and NAT
-      url: /networking/routing-and-nat/
-    - title: Security policies
-      url: /networking/security-policies/
     - title: Uplinks and bonds
       url: /networking/uplinks-and-bonds/
+    - title: Distributed switches
+      url: /networking/distributed-switches/
+    - title: Fabrics
+      url: /networking/fabrics/
+    - title: Routing and NAT
+      url: /networking/routing-and-nat/
+    - title: BGP
+      url: /networking/bgp/
+    - title: Security policies
+      url: /networking/security-policies/
 
 - section: Storage
   icon: database
@@ -89,6 +95,8 @@
       url: /storage/replicated/
     - title: Exports
       url: /storage/exports/
+    - title: The ISO library
+      url: /storage/iso-library/
 
 - section: Data protection
   icon: shield
@@ -97,6 +105,8 @@
       url: /data-protection/snapshot-policies/
     - title: Backup and restore
       url: /data-protection/backups/
+    - title: Disaster recovery
+      url: /data-protection/disaster-recovery/
 
 - section: Monitoring
   icon: activity
@@ -105,12 +115,16 @@
       url: /monitoring/metrics/
     - title: Alerts
       url: /monitoring/alerts/
+    - title: Diagnostics
+      url: /monitoring/diagnostics/
 
 - section: Administration
   icon: settings
   items:
     - title: Users and roles
       url: /administration/users-and-roles/
+    - title: Directory integration
+      url: /administration/directory/
     - title: Two-factor authentication
       url: /administration/two-factor/
     - title: API keys
@@ -129,6 +143,18 @@
       url: /high-availability/
     - title: Failover and recovery
       url: /high-availability/failover/
+    - title: Availability zones
+      url: /high-availability/availability-zones/
+
+- section: Command line
+  icon: terminal
+  items:
+    - title: The VS-HCI shell
+      url: /cli/
+    - title: Command reference
+      url: /cli/commands/
+    - title: Root shell access
+      url: /cli/root-shell/
 
 - section: Updating
   icon: download
