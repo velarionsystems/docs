@@ -146,12 +146,42 @@ sitemap:
     <a class="card doc-card lift" href="{{ '/data-protection/backups/' | relative_url }}">
       <span class="doc-card__icon">{% include icon.html name="shield" %}</span>
       <h3>Data protection</h3>
-      <p>Snapshot policies, and backups to local disk, NFS, iSCSI or remote SSH.</p>
+      <p>Snapshot policies, control-plane backups off the cluster, and replication to a second site.</p>
     </a>
     <a class="card doc-card lift" href="{{ '/updating/' | relative_url }}">
       <span class="doc-card__icon">{% include icon.html name="download" %}</span>
       <h3>Updating</h3>
-      <p>One signed file per release, verified before anything is installed.</p>
+      <p>A rolling upgrade across controllers, then hosts one at a time.</p>
     </a>
+  </div>
+</section>
+
+<section class="home-section--alt">
+  <div>
+    <p class="eyebrow">When the console is not enough</p>
+    <h2>A shell that is not a shell.</h2>
+    <p class="home-section__lede">
+      SSH lands in the VS-HCI CLI, which authenticates against the host itself when the control
+      plane is unreachable &mdash; so it still works during the outage you need it for. The
+      operating system underneath is a separate, signed, time-limited escalation.
+    </p>
+
+    <div class="card-grid">
+      <a class="card doc-card lift" href="{{ '/cli/' | relative_url }}">
+        <span class="doc-card__icon">{% include icon.html name="terminal" %}</span>
+        <h3>The VS-HCI shell</h3>
+        <p>Scope, authentication, and what it does when the control plane is down.</p>
+      </a>
+      <a class="card doc-card lift" href="{{ '/cli/commands/' | relative_url }}">
+        <span class="doc-card__icon">{% include icon.html name="book" %}</span>
+        <h3>Command reference</h3>
+        <p>The whole command tree, grouped by what each branch acts on.</p>
+      </a>
+      <a class="card doc-card lift" href="{{ '/cli/root-shell/' | relative_url }}">
+        <span class="doc-card__icon">{% include icon.html name="shield" %}</span>
+        <h3>Root shell access</h3>
+        <p>A challenge signed off the appliance, valid for one host and one hour.</p>
+      </a>
+    </div>
   </div>
 </section>
