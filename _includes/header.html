@@ -4,20 +4,12 @@
       {% include icon.html name="menu" %}
     </button>
 
-    <a class="brand" href="{{ '/' | relative_url }}">
+    <a class="brand" href="{{ site.product.portal }}">
       <span class="brand__tile">{% include logo.html %}</span>
       <span class="brand__text">
         <span class="brand__name">{{ site.product.name }}</span>
         <span class="brand__vendor">{{ site.product.vendor }}</span>
       </span>
-      <span class="brand__docs">Docs</span>
     </a>
-
-    <nav class="site-nav">
-      <a class="nav-link" href="{{ '/getting-started/' | relative_url }}">Getting started</a>
-      <a class="nav-link" href="{{ '/reference/api/' | relative_url }}">API</a>
-      <a class="pill pill-outline" href="{{ site.product.portal }}">Portal</a>
-      <a class="pill pill-primary" href="{{ site.product.portal }}/#download">Download</a>
-    </nav>
   </div>
 </header>
